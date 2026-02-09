@@ -1,4 +1,5 @@
 🌟 Características principales:
+
 👥 Gestión de Clientes
 
 Agregar clientes con nombre, teléfono, email y notas
