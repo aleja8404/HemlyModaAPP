@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ModistaApp - Gestión Profesional</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            overflow-x: auto;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #6c757d;
+            min-width: 150px;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-left: 10px;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .measurements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .client-list, .pattern-list, .payment-list {
+            list-style: none;
+        }
+
+        .client-item, .pattern-item, .payment-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .client-item:hover, .pattern-item:hover, .payment-item:hover {
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover {
+            background: #f8f9fa;
+            border-color: #764ba2;
+        }
+
+        .upload-area.dragover {
+            background: #e7f3ff;
+            border-color: #667eea;
+        }
+
+        .preview-image {
+            max-width: 300px;
+            margin: 20px auto;
+            border-radius: 8px;
+            display: block;
+        }
+
+        .fabric-result {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            opacity: 0.9;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            float: right;
+            font-size: 28px;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .measurement-display {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .measurement-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .measurement-item strong {
+            color: #667eea;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✂️ ModistaApp</h1>
+            <p>Gestión profesional para modistas y sastres</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('clientes')">👥 Clientes</button>
+            <button class="tab" onclick="switchTab('medidas')">📏 Medidas</button>
+            <button class="tab" onclick="switchTab('moldes')">📋 Moldes</button>
+            <button class="tab" onclick="switchTab('telas')">🧵 Identificar Tela</button>
+            <button class="tab" onclick="switchTab('pagos')">💰 Pagos</button>
+        </div>
+
+        <div class="content">
+            <!-- Tab Clientes -->
+            <div id="clientes" class="tab-content active">
+                <div class="stats">
+                    <div class="stat-card">
+                        <h3 id="totalClientes">0</h3>
+                        <p>Clientes Totales</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="totalPagos">$0</h3>
+                        <p>Ingresos Totales</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>➕ Agregar Nuevo Cliente</h3>
+                    <form id="clienteForm">
+                        <div class="form-group">
+                            <label>Nombre Completo</label>
+                            <input type="text" id="clienteNombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Teléfono</label>
+                            <input type="tel" id="clienteTelefono" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email (opcional)</label>
+                            <input type="email" id="clienteEmail">
+                        </div>
+                        <div class="form-group">
+                            <label>Notas</label>
+                            <textarea id="clienteNotas" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn">Guardar Cliente</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>📋 Lista de Clientes</h3>
+                    <div class="search-box">
+                        <input type="text" id="buscarCliente" placeholder="🔍 Buscar cliente...">
+                    </div>
+                    <ul class="client-list" id="clientesList"></ul>
+                </div>
+            </div>
+
+            <!-- Tab Medidas -->
+            <div id="medidas" class="tab-content">
+                <div class="card">
+                    <h3>📏 Registrar Medidas</h3>
+                    <form id="medidasForm">
+                        <div class="form-group">
+                            <label>Seleccionar Cliente</label>
+                            <select id="clienteSelectMedidas" required>
+                                <option value="">-- Seleccione un cliente --</option>
+                            </select>
+                        </div>
+
+                        <h4 style="margin: 20px 0 15px 0; color: #667eea;">Medidas del Cuerpo</h4>
+                        <div class="measurements-grid">
+                            <div class="form-group">
+                                <label>Busto (cm)</label>
+                                <input type="number" id="medidaBusto" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>Cintura (cm)</label>
+                                <input type="number" id="medidaCintura" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>Cadera (cm)</label>
+                                <input type="number" id="medidaCadera" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>Hombro (cm)</label>
+                                <input type="number" id="medidaHombro" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>Largo de Manga (cm)</label>
+                                <input type="number" id="medidaManga" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>Largo de Espalda (cm)</label>
+                                <input type="number" id="medidaEspalda" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>Largo de Falda (cm)</label>
+                                <input type="number" id="medidaFalda" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>Largo de Pantalón (cm)</label>
+                                <input type="number" id="medidaPantalon" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>Cuello (cm)</label>
+                                <input type="number" id="medidaCuello" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>Contorno de Brazo (cm)</label>
+                                <input type="number" id="medidaBrazo" step="0.1">
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 20px;">
+                            <label>Notas Adicionales</label>
+                            <textarea id="medidasNotas" rows="3"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn">Guardar Medidas</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>📊 Medidas Guardadas</h3>
+                    <div class="search-box">
+                        <input type="text" id="buscarMedidas" placeholder="🔍 Buscar por cliente...">
+                    </div>
+                    <ul class="client-list" id="medidasList"></ul>
+                </div>
+            </div>
+
+            <!-- Tab Moldes -->
+            <div id="moldes" class="tab-content">
+                <div class="card">
+                    <h3>📋 Crear Molde</h3>
+                    <form id="moldeForm">
+                        <div class="form-group">
+                            <label>Nombre del Molde</label>
+                            <input type="text" id="moldeNombre" placeholder="Ej: Vestido A-Line, Blusa Manga Larga" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de Prenda</label>
+                            <select id="moldeTipo" required>
+                                <option value="">-- Seleccione --</option>
+                                <option value="vestido">Vestido</option>
+                                <option value="blusa">Blusa</option>
+                                <option value="pantalon">Pantalón</option>
+                                <option value="falda">Falda</option>
+                                <option value="chaqueta">Chaqueta</option>
+                                <option value="camisa">Camisa</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Descripción</label>
+                            <textarea id="moldeDescripcion" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Instrucciones de Corte</label>
+                            <textarea id="moldeInstrucciones" rows="4" placeholder="Detalles sobre cómo cortar y ensamblar"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Materiales Necesarios</label>
+                            <textarea id="moldeMateriales" rows="3" placeholder="Tela, hilos, botones, etc."></textarea>
+                        </div>
+                        <button type="submit" class="btn">Guardar Molde</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>📚 Biblioteca de Moldes</h3>
+                    <div class="search-box">
+                        <input type="text" id="buscarMolde" placeholder="🔍 Buscar molde...">
+                    </div>
+                    <ul class="pattern-list" id="moldesList"></ul>
+                </div>
+            </div>
+
+            <!-- Tab Identificar Tela -->
+            <div id="telas" class="tab-content">
+                <div class="card">
+                    <h3>🧵 Identificador de Telas con IA</h3>
+                    <p style="margin-bottom: 20px; color: #6c757d;">
+                        Sube una foto de la tela y la IA te ayudará a identificar el tipo de tejido y sus características.
+                    </p>
+                    
+                    <div class="upload-area" id="uploadArea">
+                        <input type="file" id="telaInput" accept="image/*" style="display: none;">
+                        <div id="uploadPrompt">
+                            <p style="font-size: 3em; margin-bottom: 10px;">📸</p>
+                            <p style="font-size: 1.2em; color: #667eea; font-weight: 600;">Click para subir foto de la tela</p>
+                            <p style="color: #6c757d; margin-top: 10px;">o arrastra y suelta la imagen aquí</p>
+                        </div>
+                        <img id="telaPreview" class="preview-image" style="display: none;">
+                    </div>
+
+                    <button id="analizarTela" class="btn" style="margin-top: 20px; display: none;">
+                        🔍 Analizar Tela
+                    </button>
+
+                    <div id="telaResultado" class="fabric-result" style="display: none;">
+                        <h4 style="color: #667eea; margin-bottom: 15px;">📋 Resultado del Análisis</h4>
+                        <div id="telaInfo"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>📚 Historial de Telas Analizadas</h3>
+                    <ul class="pattern-list" id="telasHistorial"></ul>
+                </div>
+            </div>
+
+            <!-- Tab Pagos -->
+            <div id="pagos" class="tab-content">
+                <div class="card">
+                    <h3>💰 Registrar Pago</h3>
+                    <form id="pagoForm">
+                        <div class="form-group">
+                            <label>Cliente</label>
+                            <select id="clienteSelectPago" required>
+                                <option value="">-- Seleccione un cliente --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Descripción del Trabajo</label>
+                            <input type="text" id="pagoDescripcion" placeholder="Ej: Vestido de gala rojo" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Monto ($)</label>
+                            <input type="number" id="pagoMonto" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha</label>
+                            <input type="date" id="pagoFecha" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <select id="pagoEstado" required>
+                                <option value="pagado">Pagado</option>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="adelanto">Adelanto</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Notas</label>
+                            <textarea id="pagoNotas" rows="2"></textarea>
+                        </div>
+                        <button type="submit" class="btn">Registrar Pago</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>💵 Historial de Pagos</h3>
+                    <div class="search-box">
+                        <input type="text" id="buscarPago" placeholder="🔍 Buscar por cliente o descripción...">
+                    </div>
+                    <ul class="payment-list" id="pagosList"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para ver detalles -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // Sistema de almacenamiento local
+        class DataStore {
+            static get(key) {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : [];
+            }
+
+            static set(key, value) {
+                localStorage.setItem(key, JSON.stringify(value));
+            }
+
+            static add(key, item) {
+                const items = this.get(key);
+                item.id = Date.now() + Math.random();
+                items.push(item);
+                this.set(key, items);
+                return item;
+            }
+
+            static delete(key, id) {
+                const items = this.get(key);
+                const filtered = items.filter(item => item.id !== id);
+                this.set(key, filtered);
+            }
+
+            static update(key, id, updates) {
+                const items = this.get(key);
+                const index = items.findIndex(item => item.id === id);
+                if (index !== -1) {
+                    items[index] = { ...items[index], ...updates };
+                    this.set(key, items);
+                }
+            }
+        }
+
+        // Gestión de tabs
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Clientes
+        document.getElementById('clienteForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const cliente = {
+                nombre: document.getElementById('clienteNombre').value,
+                telefono: document.getElementById('clienteTelefono').value,
+                email: document.getElementById('clienteEmail').value,
+                notas: document.getElementById('clienteNotas').value,
+                fechaRegistro: new Date().toISOString()
+            };
+
+            DataStore.add('clientes', cliente);
+            e.target.reset();
+            renderClientes();
+            updateClienteSelects();
+            updateStats();
+            alert('✅ Cliente guardado exitosamente!');
+        });
+
+        function renderClientes() {
+            const clientes = DataStore.get('clientes');
+            const list = document.getElementById('clientesList');
+            const searchTerm = document.getElementById('buscarCliente').value.toLowerCase();
+
+            const filtered = clientes.filter(c => 
+                c.nombre.toLowerCase().includes(searchTerm) ||
+                c.telefono.includes(searchTerm)
+            );
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="empty-state"><p>No hay clientes registrados</p></div>';
+                return;
+            }
+
+            list.innerHTML = filtered.map(cliente => `
+                <li class="client-item">
+                    <div>
+                        <strong style="font-size: 1.1em;">${cliente.nombre}</strong><br>
+                        <span style="color: #6c757d;">📞 ${cliente.telefono}</span>
+                        ${cliente.email ? `<br><span style="color: #6c757d;">✉️ ${cliente.email}</span>` : ''}
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-small" onclick="verDetallesCliente(${cliente.id})">Ver</button>
+                        <button class="btn btn-small btn-danger" onclick="eliminarCliente(${cliente.id})">Eliminar</button>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        function verDetallesCliente(id) {
+            const clientes = DataStore.get('clientes');
+            const cliente = clientes.find(c => c.id === id);
+            const medidas = DataStore.get('medidas').filter(m => m.clienteId === id);
+            const pagos = DataStore.get('pagos').filter(p => p.clienteId === id);
+
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <h2>${cliente.nombre}</h2>
+                <p><strong>📞 Teléfono:</strong> ${cliente.telefono}</p>
+                ${cliente.email ? `<p><strong>✉️ Email:</strong> ${cliente.email}</p>` : ''}
+                ${cliente.notas ? `<p><strong>📝 Notas:</strong> ${cliente.notas}</p>` : ''}
+                
+                ${medidas.length > 0 ? `
+                    <h3 style="margin-top: 20px; color: #667eea;">📏 Medidas Registradas</h3>
+                    ${medidas.map(m => `
+                        <div class="measurement-display">
+                            ${m.busto ? `<div class="measurement-item"><strong>Busto:</strong> ${m.busto} cm</div>` : ''}
+                            ${m.cintura ? `<div class="measurement-item"><strong>Cintura:</strong> ${m.cintura} cm</div>` : ''}
+                            ${m.cadera ? `<div class="measurement-item"><strong>Cadera:</strong> ${m.cadera} cm</div>` : ''}
+                            ${m.hombro ? `<div class="measurement-item"><strong>Hombro:</strong> ${m.hombro} cm</div>` : ''}
+                            ${m.manga ? `<div class="measurement-item"><strong>Manga:</strong> ${m.manga} cm</div>` : ''}
+                            ${m.espalda ? `<div class="measurement-item"><strong>Espalda:</strong> ${m.espalda} cm</div>` : ''}
+                        </div>
+                    `).join('')}
+                ` : ''}
+                
+                ${pagos.length > 0 ? `
+                    <h3 style="margin-top: 20px; color: #667eea;">💰 Historial de Pagos</h3>
+                    <p><strong>Total pagado:</strong> $${pagos.reduce((sum, p) => sum + parseFloat(p.monto), 0).toFixed(2)}</p>
+                ` : ''}
+            `;
+
+            document.getElementById('detailsModal').classList.add('active');
+        }
+
+        function eliminarCliente(id) {
+            if (confirm('¿Estás seguro de eliminar este cliente? Esto también eliminará sus medidas y pagos.')) {
+                DataStore.delete('clientes', id);
+                // Eliminar medidas y pagos relacionados
+                const medidas = DataStore.get('medidas').filter(m => m.clienteId !== id);
+                DataStore.set('medidas', medidas);
+                const pagos = DataStore.get('pagos').filter(p => p.clienteId !== id);
+                DataStore.set('pagos', pagos);
+                
+                renderClientes();
+                updateClienteSelects();
+                updateStats();
+            }
+        }
+
+        // Medidas
+        document.getElementById('medidasForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const medida = {
+                clienteId: parseFloat(document.getElementById('clienteSelectMedidas').value),
+                busto: document.getElementById('medidaBusto').value,
+                cintura: document.getElementById('medidaCintura').value,
+                cadera: document.getElementById('medidaCadera').value,
+                hombro: document.getElementById('medidaHombro').value,
+                manga: document.getElementById('medidaManga').value,
+                espalda: document.getElementById('medidaEspalda').value,
+                falda: document.getElementById('medidaFalda').value,
+                pantalon: document.getElementById('medidaPantalon').value,
+                cuello: document.getElementById('medidaCuello').value,
+                brazo: document.getElementById('medidaBrazo').value,
+                notas: document.getElementById('medidasNotas').value,
+                fecha: new Date().toISOString()
+            };
+
+            DataStore.add('medidas', medida);
+            e.target.reset();
+            renderMedidas();
+            alert('✅ Medidas guardadas exitosamente!');
+        });
+
+        function renderMedidas() {
+            const medidas = DataStore.get('medidas');
+            const clientes = DataStore.get('clientes');
+            const list = document.getElementById('medidasList');
+            const searchTerm = document.getElementById('buscarMedidas').value.toLowerCase();
+
+            const medidasConCliente = medidas.map(m => ({
+                ...m,
+                cliente: clientes.find(c => c.id === m.clienteId)
+            })).filter(m => 
+                m.cliente && m.cliente.nombre.toLowerCase().includes(searchTerm)
+            );
+
+            if (medidasConCliente.length === 0) {
+                list.innerHTML = '<div class="empty-state"><p>No hay medidas registradas</p></div>';
+                return;
+            }
+
+            list.innerHTML = medidasConCliente.map(medida => `
+                <li class="client-item">
+                    <div>
+                        <strong style="font-size: 1.1em;">${medida.cliente.nombre}</strong><br>
+                        <span style="color: #6c757d;">📅 ${new Date(medida.fecha).toLocaleDateString()}</span>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-small" onclick="verDetallesMedida(${medida.id})">Ver Medidas</button>
+                        <button class="btn btn-small btn-danger" onclick="eliminarMedida(${medida.id})">Eliminar</button>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        function verDetallesMedida(id) {
+            const medidas = DataStore.get('medidas');
+            const medida = medidas.find(m => m.id === id);
+            const clientes = DataStore.get('clientes');
+            const cliente = clientes.find(c => c.id === medida.clienteId);
+
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <h2>📏 Medidas de ${cliente.nombre}</h2>
+                <p style="color: #6c757d; margin-bottom: 20px;">Registrado el ${new Date(medida.fecha).toLocaleDateString()}</p>
+                
+                <div class="measurement-display">
+                    ${medida.busto ? `<div class="measurement-item"><strong>Busto:</strong> ${medida.busto} cm</div>` : ''}
+                    ${medida.cintura ? `<div class="measurement-item"><strong>Cintura:</strong> ${medida.cintura} cm</div>` : ''}
+                    ${medida.cadera ? `<div class="measurement-item"><strong>Cadera:</strong> ${medida.cadera} cm</div>` : ''}
+                    ${medida.hombro ? `<div class="measurement-item"><strong>Hombro:</strong> ${medida.hombro} cm</div>` : ''}
+                    ${medida.manga ? `<div class="measurement-item"><strong>Largo de Manga:</strong> ${medida.manga} cm</div>` : ''}
+                    ${medida.espalda ? `<div class="measurement-item"><strong>Largo de Espalda:</strong> ${medida.espalda} cm</div>` : ''}
+                    ${medida.falda ? `<div class="measurement-item"><strong>Largo de Falda:</strong> ${medida.falda} cm</div>` : ''}
+                    ${medida.pantalon ? `<div class="measurement-item"><strong>Largo de Pantalón:</strong> ${medida.pantalon} cm</div>` : ''}
+                    ${medida.cuello ? `<div class="measurement-item"><strong>Cuello:</strong> ${medida.cuello} cm</div>` : ''}
+                    ${medida.brazo ? `<div class="measurement-item"><strong>Contorno de Brazo:</strong> ${medida.brazo} cm</div>` : ''}
+                </div>
+                
+                ${medida.notas ? `<p style="margin-top: 20px;"><strong>📝 Notas:</strong><br>${medida.notas}</p>` : ''}
+            `;
+
+            document.getElementById('detailsModal').classList.add('active');
+        }
+
+        function eliminarMedida(id) {
+            if (confirm('¿Estás seguro de eliminar estas medidas?')) {
+                DataStore.delete('medidas', id);
+                renderMedidas();
+            }
+        }
+
+        // Moldes
+        document.getElementById('moldeForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const molde = {
+                nombre: document.getElementById('moldeNombre').value,
+                tipo: document.getElementById('moldeTipo').value,
+                descripcion: document.getElementById('moldeDescripcion').value,
+                instrucciones: document.getElementById('moldeInstrucciones').value,
+                materiales: document.getElementById('moldeMateriales').value,
+                fecha: new Date().toISOString()
+            };
+
+            DataStore.add('moldes', molde);
+            e.target.reset();
+            renderMoldes();
+            alert('✅ Molde guardado exitosamente!');
+        });
+
+        function renderMoldes() {
+            const moldes = DataStore.get('moldes');
+            const list = document.getElementById('moldesList');
+            const searchTerm = document.getElementById('buscarMolde').value.toLowerCase();
+
+            const filtered = moldes.filter(m => 
+                m.nombre.toLowerCase().includes(searchTerm) ||
+                m.tipo.toLowerCase().includes(searchTerm)
+            );
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="empty-state"><p>No hay moldes registrados</p></div>';
+                return;
+            }
+
+            list.innerHTML = filtered.map(molde => `
+                <li class="pattern-item">
+                    <div>
+                        <strong style="font-size: 1.1em;">${molde.nombre}</strong><br>
+                        <span style="color: #6c757d;">📋 ${molde.tipo.charAt(0).toUpperCase() + molde.tipo.slice(1)}</span>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-small" onclick="verDetallesMolde(${molde.id})">Ver</button>
+                        <button class="btn btn-small btn-danger" onclick="eliminarMolde(${molde.id})">Eliminar</button>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        function verDetallesMolde(id) {
+            const moldes = DataStore.get('moldes');
+            const molde = moldes.find(m => m.id === id);
+
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <h2>📋 ${molde.nombre}</h2>
+                <p><strong>Tipo:</strong> ${molde.tipo.charAt(0).toUpperCase() + molde.tipo.slice(1)}</p>
+                ${molde.descripcion ? `<p><strong>Descripción:</strong><br>${molde.descripcion}</p>` : ''}
+                ${molde.instrucciones ? `<p><strong>Instrucciones:</strong><br>${molde.instrucciones}</p>` : ''}
+                ${molde.materiales ? `<p><strong>Materiales:</strong><br>${molde.materiales}</p>` : ''}
+                <p style="color: #6c757d; margin-top: 20px;">Creado el ${new Date(molde.fecha).toLocaleDateString()}</p>
+            `;
+
+            document.getElementById('detailsModal').classList.add('active');
+        }
+
+        function eliminarMolde(id) {
+            if (confirm('¿Estás seguro de eliminar este molde?')) {
+                DataStore.delete('moldes', id);
+                renderMoldes();
+            }
+        }
+
+        // Identificación de Telas
+        const uploadArea = document.getElementById('uploadArea');
+        const telaInput = document.getElementById('telaInput');
+        const telaPreview = document.getElementById('telaPreview');
+        const analizarBtn = document.getElementById('analizarTela');
+        let currentTelaImage = null;
+
+        uploadArea.addEventListener('click', () => telaInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handleTelaImage(file);
+            }
+        });
+
+        telaInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleTelaImage(file);
+            }
+        });
+
+        function handleTelaImage(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                currentTelaImage = e.target.result;
+                telaPreview.src = currentTelaImage;
+                telaPreview.style.display = 'block';
+                document.getElementById('uploadPrompt').style.display = 'none';
+                analizarBtn.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        analizarBtn.addEventListener('click', async () => {
+            if (!currentTelaImage) return;
+
+            analizarBtn.disabled = true;
+            analizarBtn.textContent = '🔄 Analizando...';
+
+            try {
+                // Llamada a la API de Claude para analizar la imagen
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-20250514',
+                        max_tokens: 1000,
+                        messages: [{
+                            role: 'user',
+                            content: [
+                                {
+                                    type: 'image',
+                                    source: {
+                                        type: 'base64',
+                                        media_type: 'image/jpeg',
+                                        data: currentTelaImage.split(',')[1]
+                                    }
+                                },
+                                {
+                                    type: 'text',
+                                    text: 'Analiza esta imagen de tela y proporciona la siguiente información en formato JSON: {"tipo": "nombre del tipo de tela", "composicion": "composición probable", "textura": "descripción de la textura", "usos": "usos recomendados", "cuidados": "instrucciones de cuidado"}. Sé específico y profesional.'
+                                }
+                            ]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                let resultado;
+
+                try {
+                    const textContent = data.content.find(c => c.type === 'text')?.text || '';
+                    const jsonMatch = textContent.match(/\{[\s\S]*\}/);
+                    resultado = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
+                } catch (e) {
+                    resultado = null;
+                }
+
+                if (!resultado) {
+                    // Respaldo si no se puede parsear JSON
+                    resultado = {
+                        tipo: 'Análisis detallado',
+                        composicion: 'Ver descripción completa',
+                        textura: data.content.find(c => c.type === 'text')?.text || 'No disponible',
+                        usos: 'Consultar con especialista',
+                        cuidados: 'Seguir etiqueta del fabricante'
+                    };
+                }
+
+                mostrarResultadoTela(resultado);
+
+                // Guardar en historial
+                DataStore.add('telas', {
+                    imagen: currentTelaImage,
+                    resultado: resultado,
+                    fecha: new Date().toISOString()
+                });
+
+                renderTelasHistorial();
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Error al analizar la tela. Por favor intenta de nuevo.');
+            } finally {
+                analizarBtn.disabled = false;
+                analizarBtn.textContent = '🔍 Analizar Tela';
+            }
+        });
+
+        function mostrarResultadoTela(resultado) {
+            const resultadoDiv = document.getElementById('telaResultado');
+            const infoDiv = document.getElementById('telaInfo');
+
+            infoDiv.innerHTML = `
+                <div style="margin-bottom: 15px;">
+                    <strong style="color: #667eea;">🧵 Tipo de Tela:</strong>
+                    <p>${resultado.tipo}</p>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <strong style="color: #667eea;">📊 Composición:</strong>
+                    <p>${resultado.composicion}</p>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <strong style="color: #667eea;">✋ Textura:</strong>
+                    <p>${resultado.textura}</p>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <strong style="color: #667eea;">👗 Usos Recomendados:</strong>
+                    <p>${resultado.usos}</p>
+                </div>
+                <div>
+                    <strong style="color: #667eea;">🧼 Cuidados:</strong>
+                    <p>${resultado.cuidados}</p>
+                </div>
+            `;
+
+            resultadoDiv.style.display = 'block';
+        }
+
+        function renderTelasHistorial() {
+            const telas = DataStore.get('telas');
+            const list = document.getElementById('telasHistorial');
+
+            if (telas.length === 0) {
+                list.innerHTML = '<div class="empty-state"><p>No hay telas analizadas aún</p></div>';
+                return;
+            }
+
+            list.innerHTML = telas.reverse().map(tela => `
+                <li class="pattern-item">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <img src="${tela.imagen}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                        <div>
+                            <strong>${tela.resultado.tipo}</strong><br>
+                            <span style="color: #6c757d;">📅 ${new Date(tela.fecha).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-small" onclick="verDetalleTela(${tela.id})">Ver</button>
+                        <button class="btn btn-small btn-danger" onclick="eliminarTela(${tela.id})">Eliminar</button>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        function verDetalleTela(id) {
+            const telas = DataStore.get('telas');
+            const tela = telas.find(t => t.id === id);
+
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <h2>🧵 Análisis de Tela</h2>
+                <img src="${tela.imagen}" style="max-width: 100%; border-radius: 8px; margin: 20px 0;">
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                    <p><strong>Tipo:</strong> ${tela.resultado.tipo}</p>
+                    <p><strong>Composición:</strong> ${tela.resultado.composicion}</p>
+                    <p><strong>Textura:</strong> ${tela.resultado.textura}</p>
+                    <p><strong>Usos:</strong> ${tela.resultado.usos}</p>
+                    <p><strong>Cuidados:</strong> ${tela.resultado.cuidados}</p>
+                </div>
+                <p style="color: #6c757d; margin-top: 20px;">Analizado el ${new Date(tela.fecha).toLocaleDateString()}</p>
+            `;
+
+            document.getElementById('detailsModal').classList.add('active');
+        }
+
+        function eliminarTela(id) {
+            if (confirm('¿Estás seguro de eliminar este análisis?')) {
+                DataStore.delete('telas', id);
+                renderTelasHistorial();
+            }
+        }
+
+        // Pagos
+        document.getElementById('pagoForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const pago = {
+                clienteId: parseFloat(document.getElementById('clienteSelectPago').value),
+                descripcion: document.getElementById('pagoDescripcion').value,
+                monto: parseFloat(document.getElementById('pagoMonto').value),
+                fecha: document.getElementById('pagoFecha').value,
+                estado: document.getElementById('pagoEstado').value,
+                notas: document.getElementById('pagoNotas').value,
+                fechaRegistro: new Date().toISOString()
+            };
+
+            DataStore.add('pagos', pago);
+            e.target.reset();
+            renderPagos();
+            updateStats();
+            alert('✅ Pago registrado exitosamente!');
+        });
+
+        function renderPagos() {
+            const pagos = DataStore.get('pagos');
+            const clientes = DataStore.get('clientes');
+            const list = document.getElementById('pagosList');
+            const searchTerm = document.getElementById('buscarPago').value.toLowerCase();
+
+            const pagosConCliente = pagos.map(p => ({
+                ...p,
+                cliente: clientes.find(c => c.id === p.clienteId)
+            })).filter(p => 
+                (p.cliente && p.cliente.nombre.toLowerCase().includes(searchTerm)) ||
+                p.descripcion.toLowerCase().includes(searchTerm)
+            );
+
+            if (pagosConCliente.length === 0) {
+                list.innerHTML = '<div class="empty-state"><p>No hay pagos registrados</p></div>';
+                return;
+            }
+
+            list.innerHTML = pagosConCliente.reverse().map(pago => `
+                <li class="payment-item">
+                    <div>
+                        <strong style="font-size: 1.1em;">${pago.cliente ? pago.cliente.nombre : 'Cliente eliminado'}</strong><br>
+                        <span style="color: #6c757d;">${pago.descripcion}</span><br>
+                        <span style="color: #6c757d;">📅 ${new Date(pago.fecha).toLocaleDateString()}</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 1.3em; font-weight: bold; color: #28a745;">$${parseFloat(pago.monto).toFixed(2)}</div>
+                        <span style="padding: 4px 8px; border-radius: 4px; font-size: 0.85em; background: ${
+                            pago.estado === 'pagado' ? '#28a745' : 
+                            pago.estado === 'pendiente' ? '#ffc107' : '#17a2b8'
+                        }; color: white;">
+                            ${pago.estado.charAt(0).toUpperCase() + pago.estado.slice(1)}
+                        </span>
+                        <div class="actions" style="margin-top: 10px;">
+                            <button class="btn btn-small btn-danger" onclick="eliminarPago(${pago.id})">Eliminar</button>
+                        </div>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        function eliminarPago(id) {
+            if (confirm('¿Estás seguro de eliminar este pago?')) {
+                DataStore.delete('pagos', id);
+                renderPagos();
+                updateStats();
+            }
+        }
+
+        // Actualizar selects de clientes
+        function updateClienteSelects() {
+            const clientes = DataStore.get('clientes');
+            const selects = [
+                document.getElementById('clienteSelectMedidas'),
+                document.getElementById('clienteSelectPago')
+            ];
+
+            selects.forEach(select => {
+                const currentValue = select.value;
+                select.innerHTML = '<option value="">-- Seleccione un cliente --</option>' +
+                    clientes.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+                select.value = currentValue;
+            });
+        }
+
+        // Actualizar estadísticas
+        function updateStats() {
+            const clientes = DataStore.get('clientes');
+            const pagos = DataStore.get('pagos');
+
+            document.getElementById('totalClientes').textContent = clientes.length;
+            
+            const totalPagos = pagos
+                .filter(p => p.estado === 'pagado')
+                .reduce((sum, p) => sum + parseFloat(p.monto), 0);
+            
+            document.getElementById('totalPagos').textContent = `$${totalPagos.toFixed(2)}`;
+        }
+
+        // Modal
+        function closeModal() {
+            document.getElementById('detailsModal').classList.remove('active');
+        }
+
+        // Event listeners para búsqueda
+        document.getElementById('buscarCliente').addEventListener('input', renderClientes);
+        document.getElementById('buscarMedidas').addEventListener('input', renderMedidas);
+        document.getElementById('buscarMolde').addEventListener('input', renderMoldes);
+        document.getElementById('buscarPago').addEventListener('input', renderPagos);
+
+        // Inicializar la app
+        function initApp() {
+            renderClientes();
+            renderMedidas();
+            renderMoldes();
+            renderTelasHistorial();
+            renderPagos();
+            updateClienteSelects();
+            updateStats();
+
+            // Establecer fecha de hoy por defecto
+            document.getElementById('pagoFecha').valueAsDate = new Date();
+        }
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('detailsModal').addEventListener('click', (e) => {
+            if (e.target.id === 'detailsModal') {
+                closeModal();
+            }
+        });
+
+        // Iniciar aplicación
+        initApp();
+    </script>
+</body>
+</html>
